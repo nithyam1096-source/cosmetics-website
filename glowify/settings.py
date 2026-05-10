@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-3(yn(xay9wp_vv7b0dgkyr0q7+et(!385yu2h#^j7%#_(gm8z1
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['glowify-trpt.onrender.com']
 
 
 # Application definition
