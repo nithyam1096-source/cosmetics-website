@@ -1,0 +1,157 @@
+{% extends 'shop/base.html' %}
+
+{% block content %}
+{% if offer_banners %}
+<section class="offers-banner-section">
+    {% for banner in offer_banners %}
+    <div class="offers-banner-slide">
+        {% if banner.image %}
+        <img src="{{ banner.image.url }}" alt="Offer Banner" class="offers-banner-image">
+        {% endif %}
+    </div>
+    {% endfor %}
+</section>
+{% endif %}
+
+{% if offer_products %}
+<section class="bogo-section">
+    <div class="container">
+        <div class="bogo-header">
+            
+            <h2 class="bogo-title">BUY 1 GET 1</h2>
+            
+        </div>
+        <div class="bogo-grid">
+            {% for product in offer_products %}
+            <div class="bogo-card">
+                <div class="bogo-card-img-wrap">
+                    <img src="{{ product.image.url }}" alt="{{ product.title }}" class="bogo-card-img">
+                    
+                </div>
+                <div class="bogo-card-body">
+                    <h3 class="bogo-card-title">{{ product.title }}</h3>
+                    <p class="bogo-card-desc">{{ product.description }}</p>
+                    <div class="bogo-pricing">
+                        <span class="bogo-price">₹{{ product.discount_price }}</span>
+                        <span class="bogo-original-price">₹{{ product.original_price }}</span>
+                    </div>
+                    <button class="bogo-add-cart"><i class="fas fa-shopping-cart"></i> Add to Cart</button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+{% if midnight_set %}
+<section class="midnight-section">
+    <div class="container">
+        <div class="midnight-wrapper">
+            <div class="midnight-image-wrap">
+                <img src="{{ midnight_set.image.url }}" alt="Midnight Repair Set" class="midnight-image">
+            </div>
+            <div class="midnight-content">
+                <span class="midnight-badge">Exclusive</span>
+                <h2 class="midnight-heading">Exclusive Kit: The Midnight Repair Set</h2>
+                <p class="midnight-desc">A luxurious collagen-enriched skincare collection designed to rejuvenate and repair your skin while you sleep. Includes night serum, collagen mask, and revitalizing eye cream in a premium gift box.</p>
+                <div class="midnight-pricing">
+                    <span class="midnight-price">₹1,299</span>
+                    <span class="midnight-original">₹1,999</span>
+                    <span class="midnight-save">Save 35%</span>
+                </div>
+                <a href="{% url 'shop:shop' %}" class="midnight-btn">Claim This Offer <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<section class="newsletter-section">
+    <div class="container">
+        <div class="newsletter-banner">
+            <div class="newsletter-particles">
+                <span class="particle p1"></span>
+                <span class="particle p2"></span>
+                <span class="particle p3"></span>
+                <span class="particle p4"></span>
+                <span class="particle p5"></span>
+            </div>
+            {% if newsletter_img %}
+            <div class="newsletter-image-wrap">
+                <img src="{{ newsletter_img.image.url }}" alt="Newsletter" class="newsletter-image">
+            </div>
+            {% endif %}
+            <div class="newsletter-content-wrap">
+                <div class="newsletter-content">
+                    <h2 class="newsletter-heading">Join The Inner Circle</h2>
+                    <p class="newsletter-subtitle">Sign up to receive early access to new launches, exclusive offers and skincare tips.</p>
+                    <form class="newsletter-form" id="offersNewsletterForm">
+                    {% csrf_token %}
+                    <div class="newsletter-input-group">
+                        <i class="fas fa-envelope newsletter-icon"></i>
+                        <input type="email" name="email" placeholder="Enter your email address" required class="newsletter-input">
+                        <button type="submit" class="newsletter-btn">Register</button>
+                    </div>
+                    <div class="newsletter-message" id="offersNewsletterMessage"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</section>
+
+<section class="offers-section">
+    <div class="container">
+        <div class="offers-grid">
+            {% for offer in active_offers %}
+            <div class="offer-card">
+                <div class="offer-header">
+                    <span class="offer-discount">{{ offer.discount_percentage }}% OFF</span>
+                    <span class="offer-status active">Active</span>
+                </div>
+                <h3>{{ offer.title }}</h3>
+                <p>{{ offer.description }}</p>
+                <div class="offer-footer">
+                    <span class="offer-expiry"><i class="far fa-clock"></i> Expires: {{ offer.expiry_date|date:"M d, Y" }}</span>
+                    <a href="{% url 'shop:shop' %}" class="btn-shop-now small">Shop Now</a>
+                </div>
+            </div>
+            {% empty %}
+          
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var form = document.getElementById('offersNewsletterForm');
+    var msg = document.getElementById('offersNewsletterMessage');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            msg.textContent = 'Subscribing...';
+            msg.className = 'newsletter-message';
+            fetch('{% url "shop:newsletter_subscribe" %}', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json', 'X-CSRFToken': form.querySelector('[name=csrfmiddlewaretoken]').value},
+                body: JSON.stringify({email: form.querySelector('input[name="email"]').value})
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(d) {
+                msg.textContent = d.message;
+                msg.className = 'newsletter-message ' + (d.success ? 'success' : 'error');
+                if (d.success) form.querySelector('input[name="email"]').value = '';
+            })
+            .catch(function() {
+                msg.textContent = 'Something went wrong. Try again.';
+                msg.className = 'newsletter-message error';
+            });
+        });
+    }
+});
+</script>
+{% endblock %}

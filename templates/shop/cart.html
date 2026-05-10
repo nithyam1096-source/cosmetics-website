@@ -1,0 +1,188 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+
+{% block title %}Shopping Cart - Glowify{% endblock %}
+
+{% block content %}
+
+<section class="cart-page-section">
+    <div class="container">
+        <div class="cart-page-header">
+            <h1 class="cart-page-heading">Shopping Cart</h1>
+            <p class="cart-page-count">{{ item_count }} item{{ item_count|pluralize }} in your cart</p>
+        </div>
+
+        {% if cart_items %}
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="cart-items-list">
+                    {% for item in cart_items %}
+                    <div class="cart-item-card" data-key="{{ item.key }}">
+                        <div class="cart-item-left">
+                            <div class="cart-item-img-wrap">
+                                <img src="{{ item.image }}" alt="{{ item.name }}">
+                            </div>
+                            <div class="cart-item-info">
+                                <h3 class="cart-item-name">{{ item.name }}</h3>
+                                <p class="cart-item-price">₹{{ item.price|floatformat:2 }}</p>
+                            </div>
+                        </div>
+                        <div class="cart-item-right">
+                            <div class="cart-qty-wrap">
+                                <button class="cart-qty-btn cart-qty-minus" data-key="{{ item.key }}">−</button>
+                                <input type="number" class="cart-qty-input" value="{{ item.qty }}" min="1" data-key="{{ item.key }}">
+                                <button class="cart-qty-btn cart-qty-plus" data-key="{{ item.key }}">+</button>
+                            </div>
+                            <p class="cart-item-total">₹{{ item.total|floatformat:2 }}</p>
+                            <button class="cart-item-remove" data-key="{{ item.key }}" title="Remove item">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="cart-summary-card">
+                    <h3 class="summary-card-title">Order Summary</h3>
+                    <div class="summary-row">
+                        <span>Subtotal</span>
+                        <span id="cartSubtotal">₹{{ subtotal|floatformat:2 }}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Shipping</span>
+                        <span class="summary-free">Free</span>
+                    </div>
+                    <div class="summary-divider"></div>
+                    <div class="summary-row summary-total-row">
+                        <span>Total</span>
+                        <span id="cartTotal">₹{{ total|floatformat:2 }}</span>
+                    </div>
+                    <a href="{% url 'shop:checkout' %}" class="checkout-btn">
+                        Proceed to Checkout <i class="fas fa-arrow-right"></i>
+                    </a>
+                    <a href="{% url 'shop:shop' %}" class="continue-shopping-link">
+                        <i class="fas fa-chevron-left"></i> Continue Shopping
+                    </a>
+                    <div class="secure-checkout">
+                        <i class="fas fa-lock"></i>
+                        <span>Secure Checkout</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="empty-cart">
+            <div class="empty-cart-icon">
+                <i class="fas fa-shopping-bag"></i>
+            </div>
+            <h2 class="empty-cart-title">Your cart is empty</h2>
+            <p class="empty-cart-desc">Looks like you haven't added any products yet. Explore our collection and find your perfect beauty essentials!</p>
+            <a href="{% url 'shop:shop' %}" class="shop-now-btn">Shop Now</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    function getCookie(name) {
+        var c = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+        return c ? c.pop() : '';
+    }
+
+    function updateSummary(data) {
+        var sub = document.getElementById('cartSubtotal');
+        var tot = document.getElementById('cartTotal');
+        if (sub) sub.textContent = '₹' + data.subtotal.toFixed(2);
+        if (tot) tot.textContent = '₹' + data.total.toFixed(2);
+        var countEl = document.querySelector('.cart-page-count');
+        if (countEl) countEl.textContent = data.item_count + ' item' + (data.item_count !== 1 ? 's' : '') + ' in your cart';
+        var badge = document.querySelector('.cart-badge');
+        if (badge) badge.textContent = data.item_count;
+    }
+
+    function removeItemCard(key) {
+        var card = document.querySelector('.cart-item-card[data-key="' + key + '"]');
+        if (card) {
+            card.style.transform = 'translateX(100%)';
+            card.style.opacity = '0';
+            setTimeout(function() { card.remove(); }, 300);
+        }
+        var remaining = document.querySelectorAll('.cart-item-card').length - 1;
+        if (remaining === 0) {
+            setTimeout(function() {
+                location.reload();
+            }, 350);
+        }
+    }
+
+    document.querySelectorAll('.cart-qty-plus').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var key = this.getAttribute('data-key');
+            var input = document.querySelector('.cart-qty-input[data-key="' + key + '"]');
+            var val = parseInt(input.value) + 1;
+            input.value = val;
+            updateCartItem(key, val);
+        });
+    });
+
+    document.querySelectorAll('.cart-qty-minus').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var key = this.getAttribute('data-key');
+            var input = document.querySelector('.cart-qty-input[data-key="' + key + '"]');
+            var val = parseInt(input.value) - 1;
+            if (val < 1) return;
+            input.value = val;
+            updateCartItem(key, val);
+        });
+    });
+
+    document.querySelectorAll('.cart-qty-input').forEach(function(inp) {
+        inp.addEventListener('change', function() {
+            var key = this.getAttribute('data-key');
+            var val = parseInt(this.value);
+            if (val < 1) val = 1;
+            this.value = val;
+            updateCartItem(key, val);
+        });
+    });
+
+    function updateCartItem(key, qty) {
+        fetch('{% url "shop:update_cart" %}', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken')},
+            body: JSON.stringify({key: key, qty: qty})
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+            if (d.success) {
+                var totalEl = document.querySelector('.cart-item-card[data-key="' + key + '"] .cart-item-total');
+                if (totalEl) totalEl.textContent = '₹' + d.item_total.toFixed(2);
+                updateSummary(d);
+            }
+        });
+    }
+
+    document.querySelectorAll('.cart-item-remove').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var key = this.getAttribute('data-key');
+            fetch('{% url "shop:remove_from_cart" %}', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken')},
+                body: JSON.stringify({key: key})
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(d) {
+                if (d.success) {
+                    removeItemCard(key);
+                    updateSummary(d);
+                }
+            });
+        });
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,166 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+
+{% block title %}Payment - Glowify{% endblock %}
+
+{% block content %}
+
+<section class="payment-section">
+    <div class="container">
+        <div class="payment-header">
+            <h1 class="payment-heading">Payment</h1>
+        </div>
+
+        {% if cart_items %}
+        <div class="row g-4">
+            <div class="col-lg-7">
+                <div class="payment-card">
+                    <h3 class="payment-card-title">Choose Payment Method</h3>
+                    <div class="payment-methods">
+                        <label class="payment-method">
+                            <input type="radio" name="payment_method" value="card" checked>
+                            <span class="payment-method-radio"></span>
+                            <i class="fas fa-credit-card"></i>
+                            <span class="payment-method-label">Credit / Debit Card</span>
+                        </label>
+                        <label class="payment-method">
+                            <input type="radio" name="payment_method" value="upi">
+                            <span class="payment-method-radio"></span>
+                            <i class="fas fa-mobile-alt"></i>
+                            <span class="payment-method-label">UPI</span>
+                        </label>
+                        <label class="payment-method">
+                            <input type="radio" name="payment_method" value="netbanking">
+                            <span class="payment-method-radio"></span>
+                            <i class="fas fa-university"></i>
+                            <span class="payment-method-label">Net Banking</span>
+                        </label>
+                        <label class="payment-method">
+                            <input type="radio" name="payment_method" value="cod">
+                            <span class="payment-method-radio"></span>
+                            <i class="fas fa-money-bill-wave"></i>
+                            <span class="payment-method-label">Cash on Delivery</span>
+                        </label>
+                    </div>
+
+                    <div class="payment-card-form" id="cardForm">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="payment-label">Card Number</label>
+                                <input type="text" class="payment-input" placeholder="1234 5678 9012 3456" maxlength="19">
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="payment-label">Expiry Date</label>
+                                <input type="text" class="payment-input" placeholder="MM/YY" maxlength="5">
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="payment-label">CVV</label>
+                                <input type="text" class="payment-input" placeholder="123" maxlength="4">
+                            </div>
+                            <div class="col-12">
+                                <label class="payment-label">Name on Card</label>
+                                <input type="text" class="payment-input" placeholder="John Doe">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="pay-now-btn">Pay ₹{{ total|floatformat:2 }} <i class="fas fa-lock"></i></button>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="payment-summary-card">
+                    <h3 class="payment-summary-title">Order Summary</h3>
+                    <div class="payment-summary-items">
+                        {% for item in cart_items %}
+                        <div class="payment-summary-item">
+                            <div class="payment-summary-img">
+                                <img src="{{ item.image }}" alt="{{ item.name }}">
+                                <span class="payment-summary-qty">{{ item.qty }}</span>
+                            </div>
+                            <div class="payment-summary-info">
+                                <p class="payment-summary-name">{{ item.name }}</p>
+                                <p class="payment-summary-price">₹{{ item.total|floatformat:2 }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="payment-summary-divider"></div>
+                    <div class="payment-summary-row">
+                        <span>Subtotal</span>
+                        <span>₹{{ subtotal|floatformat:2 }}</span>
+                    </div>
+                    <div class="payment-summary-row">
+                        <span>Shipping</span>
+                        <span class="payment-free">Free</span>
+                    </div>
+                    <div class="payment-summary-divider"></div>
+                    <div class="payment-summary-row payment-summary-total">
+                        <span>Total</span>
+                        <span>₹{{ total|floatformat:2 }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="empty-cart">
+            <div class="empty-cart-icon">
+                <i class="fas fa-shopping-bag"></i>
+            </div>
+            <h2 class="empty-cart-title">Nothing to pay</h2>
+            <p class="empty-cart-desc">Your cart is empty. Add some products first!</p>
+            <a href="{% url 'shop:shop' %}" class="shop-now-btn">Shop Now</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var methods = document.querySelectorAll('input[name="payment_method"]');
+    var cardForm = document.getElementById('cardForm');
+    methods.forEach(function(m) {
+        m.addEventListener('change', function() {
+            if (this.value === 'card') {
+                cardForm.style.display = 'block';
+            } else {
+                cardForm.style.display = 'none';
+            }
+        });
+    });
+
+    var payBtn = document.querySelector('.pay-now-btn');
+    if (payBtn) {
+        payBtn.addEventListener('click', function() {
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            setTimeout(function() {
+                window.location.href = '{% url "shop:track_order" %}';
+            }, 1500);
+        });
+    }
+
+    var cardInput = document.querySelector('.payment-input[placeholder*="1234"]');
+    if (cardInput) {
+        cardInput.addEventListener('input', function(e) {
+            var val = this.value.replace(/\D/g, '');
+            var formatted = val.replace(/(.{4})/g, '$1 ').trim();
+            this.value = formatted.substring(0, 19);
+        });
+    }
+
+    var expiryInput = document.querySelector('.payment-input[placeholder*="MM/YY"]');
+    if (expiryInput) {
+        expiryInput.addEventListener('input', function(e) {
+            var val = this.value.replace(/\D/g, '');
+            if (val.length >= 2) {
+                this.value = val.substring(0, 2) + '/' + val.substring(2, 4);
+            } else {
+                this.value = val;
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

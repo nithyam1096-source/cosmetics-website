@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Glowify - Premium Beauty & Cosmetics{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='28' font-size='28'>💄</text></svg>">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar-glass">
+        <div class="container">
+            <div class="navbar-wrapper">
+                <div class="navbar-left">
+                    <a href="{% url 'shop:home' %}" class="logo">Glowify</a>
+                </div>
+                
+                <div class="navbar-center">
+                    <a href="{% url 'shop:home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a>
+                    <div class="nav-dropdown">
+                        <a href="{% url 'shop:shop' %}" class="nav-link shop-trigger {% if request.resolver_match.url_name == 'shop' %}active{% endif %}">Shop</a>
+                        <div class="dropdown-panel" id="shopDropdown">
+                            <div class="dropdown-header">Category</div>
+                            <div class="dropdown-items">
+                                {% for cat in navbar_categories %}
+                                <a href="{% if cat.slug == 'eye-makeup' %}{% url 'shop:eye_makeup' %}{% elif cat.slug == 'fragrance' %}{% url 'shop:fragrance' %}{% elif cat.slug == 'hair-care' %}{% url 'shop:hair_care' %}{% elif cat.slug == 'lipsticks' %}{% url 'shop:lipstick' %}{% elif cat.slug == 'nails' %}{% url 'shop:nail' %}{% else %}{% url 'shop:shop' %}?category={{ cat.slug }}{% endif %}" class="dropdown-item">
+                                    <span>{{ cat.category_name }}</span>
+                                    <i class="fas fa-arrow-right"></i>
+                                </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <a href="{% url 'shop:offers' %}" class="nav-link {% if request.resolver_match.url_name == 'offers' %}active{% endif %}">Offers</a>
+                    <a href="{% url 'shop:about' %}" class="nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}">About</a>
+                    <a href="{% url 'shop:contact' %}" class="nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}">Contact</a>
+                </div>
+                
+                <div class="navbar-right">
+                    <div class="search-container">
+                        <form action="{% url 'shop:shop' %}" method="GET">
+                            <div class="search-bar">
+                                <i class="fas fa-search search-icon"></i>
+                                <input type="text" name="q" placeholder="Search blush..." value="{{ search_query }}">
+                            </div>
+                        </form>
+                    </div>
+                    <a href="{% url 'shop:cart' %}" class="nav-icon"><i class="fas fa-shopping-cart"></i><span class="badge-count cart-badge">{{ cart_count }}</span></a>
+                    <a href="#" class="nav-icon"><i class="fas fa-heart"></i></a>
+                    <a href="{% url 'shop:login' %}" class="nav-icon"><i class="fas fa-user"></i></a>
+                    <button class="mobile-menu-btn" id="mobileMenuBtn">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="mobile-nav" id="mobileNav">
+        <div class="mobile-nav-header">
+            <span class="logo">Glowify</span>
+            <button class="close-btn" id="closeMobileNav"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="mobile-nav-links">
+            <a href="{% url 'shop:home' %}" class="mobile-nav-link">Home</a>
+            <a href="{% url 'shop:shop' %}" class="mobile-nav-link">Shop</a>
+            <a href="{% url 'shop:offers' %}" class="mobile-nav-link">Offers</a>
+            <a href="{% url 'shop:about' %}" class="mobile-nav-link">About</a>
+            <a href="{% url 'shop:contact' %}" class="mobile-nav-link">Contact</a>
+        </div>
+    </div>
+
+    {% block content %}{% endblock %}
+
+    <footer class="site-footer" style="{% if footer_settings.background_image %}background: url('{{ footer_settings.background_image.url }}') center/cover no-repeat;{% else %}background: linear-gradient(135deg, {{ footer_settings.bg_color_start|default:'#ff4fa3' }}, {{ footer_settings.bg_color_end|default:'#ff1493' }});{% endif %}">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="footer-logo-circle">
+                        <span>{{ footer_settings.logo_text|default:'Glowify' }}</span>
+                    </div>
+                    <p class="footer-address">{{ footer_settings.address|linebreaksbr }}</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="{{ footer_settings.quick_link_1_url|default:'/shop/' }}">{{ footer_settings.quick_link_1_text|default:'Shop' }}</a></li>
+                        <li><a href="{{ footer_settings.quick_link_2_url|default:'/shop/?sort=newest' }}">{{ footer_settings.quick_link_2_text|default:'New Arrivals' }}</a></li>
+                        <li><a href="{{ footer_settings.quick_link_3_url|default:'/offers/' }}">{{ footer_settings.quick_link_3_text|default:'Offers' }}</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="{{ footer_settings.support_link_1_url|default:'/about/' }}">{{ footer_settings.support_link_1_text|default:'About' }}</a></li>
+                        <li><a href="{{ footer_settings.support_link_2_url|default:'/contact/' }}">{{ footer_settings.support_link_2_text|default:'Contact' }}</a></li>
+                        <li><a href="{{ footer_settings.support_link_3_url|default:'#' }}">{{ footer_settings.support_link_3_text|default:'Terms & Conditions' }}</a></li>
+                        <li><a href="{{ footer_settings.support_link_4_url|default:'#' }}">{{ footer_settings.support_link_4_text|default:'Privacy Policy' }}</a></li>
+                    </ul>
+                </div>
+                <div class="footer-social">
+                    <h4>Social Media</h4>
+                    <div class="social-icons">
+                        <a href="{{ footer_settings.facebook_url|default:'#' }}" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="{{ footer_settings.instagram_url|default:'#' }}" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="container">
+                <p>{{ footer_settings.copyright_text|default:'© 2026 Glowify. All rights reserved.' }}</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

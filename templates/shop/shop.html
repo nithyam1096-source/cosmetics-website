@@ -1,0 +1,209 @@
+{% extends 'shop/base.html' %}
+
+{% block content %}
+<section class="shop-page">
+    <div class="container">
+        <div class="shop-top-bar">
+            <div class="shop-top-left">
+                <h1 class="shop-page-title">{{ current_category_name|default:'All Products' }}</h1>
+                <div class="title-divider"></div>
+            </div>
+            <div class="shop-top-right">
+                <div class="sort-wrapper">
+                    <i class="fas fa-arrow-down-wide-short sort-icon"></i>
+                    <select class="sort-select" onchange="window.location.href=this.value">
+                        <option value="?{% if current_category %}category={{ current_category }}&{% endif %}{% if search_query %}q={{ search_query }}&{% endif %}sort=newest">Sort By</option>
+                        <option value="?{% if current_category %}category={{ current_category }}&{% endif %}{% if search_query %}q={{ search_query }}&{% endif %}sort=newest" {% if request.GET.sort == 'newest' %}selected{% endif %}>Newest First</option>
+                        <option value="?{% if current_category %}category={{ current_category }}&{% endif %}{% if search_query %}q={{ search_query }}&{% endif %}sort=price_low" {% if request.GET.sort == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+                        <option value="?{% if current_category %}category={{ current_category }}&{% endif %}{% if search_query %}q={{ search_query }}&{% endif %}sort=price_high" {% if request.GET.sort == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="shop-layout">
+            <aside class="shop-sidebar">
+                <div class="filter-card">
+                    <div class="filter-header">
+                        <i class="fas fa-filter"></i>
+                        <span>Filter</span>
+                    </div>
+                    <div class="filter-group">
+                        <div class="filter-dropdown">
+                            <button class="filter-dropdown-btn">
+                                <span>Brand</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="filter-dropdown-menu">
+                                <label><input type="checkbox"> Lakme</label>
+                                <label><input type="checkbox"> PLIX</label>
+                                <label><input type="checkbox"> Minimalist</label>
+                                <label><input type="checkbox"> Maybelline</label>
+                            </div>
+                        </div>
+                        <div class="filter-dropdown">
+                            <button class="filter-dropdown-btn">
+                                <span>Color</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="filter-dropdown-menu">
+                                <label><input type="checkbox"> Pink</label>
+                                <label><input type="checkbox"> Red</label>
+                                <label><input type="checkbox"> Nude</label>
+                                <label><input type="checkbox"> Coral</label>
+                            </div>
+                        </div>
+                        <div class="filter-dropdown">
+                            <button class="filter-dropdown-btn">
+                                <span>Discount</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="filter-dropdown-menu">
+                                <label><input type="checkbox"> 10% and above</label>
+                                <label><input type="checkbox"> 20% and above</label>
+                                <label><input type="checkbox"> 30% and above</label>
+                                <label><input type="checkbox"> 50% and above</label>
+                            </div>
+                        </div>
+                        <div class="filter-dropdown">
+                            <button class="filter-dropdown-btn">
+                                <span>Price</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="filter-dropdown-menu">
+                                <label><input type="checkbox"> Under ₹500</label>
+                                <label><input type="checkbox"> ₹500 - ₹1000</label>
+                                <label><input type="checkbox"> ₹1000 - ₹2000</label>
+                                <label><input type="checkbox"> Above ₹2000</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <div class="shop-main">
+                <div class="products-grid-new">
+                    {% for product in products %}
+                    <div class="product-card-new{% if is_fragrance %} fragrance-card{% endif %}">
+                        <div class="product-img-wrap">
+                            <a href="{% if is_eye_makeup %}{% url 'shop:eye_makeup_detail' product.slug %}{% elif is_fragrance %}{% url 'shop:fragrance_detail' product.slug %}{% elif is_hair_care %}{% url 'shop:hair_care_detail' product.slug %}{% elif is_lipstick %}{% url 'shop:lipstick_detail' product.slug %}{% elif is_nail %}{% url 'shop:nail_detail' product.slug %}{% else %}{% url 'shop:product_detail' product.slug %}{% endif %}">
+                                <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                            </a>
+                            <button class="wishlist-btn-new"><i class="far fa-heart"></i></button>
+                            {% if product.on_sale %}
+                            <span class="sale-badge-new">-{{ product.discount_percentage }}%</span>
+                            {% endif %}
+                        </div>
+                        <div class="product-info-new">
+                            <span class="product-brand">{% if is_eye_makeup %}{{ product.brand.name|default:'Eye Makeup' }}{% elif is_fragrance %}{{ product.brand.name|default:'Fragrance' }}{% elif is_hair_care %}{{ product.brand.name|default:'Hair Care' }}{% elif is_lipstick %}{{ product.brand.name|default:'Lipsticks' }}{% elif is_nail %}{{ product.brand.name|default:'Nails' }}{% else %}{{ product.category.category_name }}{% endif %}</span>
+                            <h3 class="product-title-new">
+                                <a href="{% if is_eye_makeup %}{% url 'shop:eye_makeup_detail' product.slug %}{% elif is_fragrance %}{% url 'shop:fragrance_detail' product.slug %}{% elif is_hair_care %}{% url 'shop:hair_care_detail' product.slug %}{% elif is_lipstick %}{% url 'shop:lipstick_detail' product.slug %}{% elif is_nail %}{% url 'shop:nail_detail' product.slug %}{% else %}{% url 'shop:product_detail' product.slug %}{% endif %}">{{ product.name }}</a>
+                            </h3>
+                            <div class="product-rating-new">
+                                {% with r=product.rating|default:4 %}
+                                {% for i in '12345'|make_list %}
+                                <i class="fas fa-star {% if forloop.counter > r %}empty{% endif %}"></i>
+                                {% endfor %}
+                                {% endwith %}
+                                <span>({{ product.reviews }})</span>
+                            </div>
+                            <div class="product-price-new">
+                                {% if product.on_sale %}
+                                <span class="current">₹{{ product.discount_price }}</span>
+                                <span class="original">₹{{ product.price }}</span>
+                                {% else %}
+                                <span class="current">₹{{ product.price }}</span>
+                                {% endif %}
+                            </div>
+                            <button class="add-cart-btn-new add-to-cart-btn" data-key="{% if is_eye_makeup %}eye{% elif is_fragrance %}fragrance{% elif is_hair_care %}hair{% elif is_lipstick %}lipstick{% elif is_nail %}nail{% else %}product{% endif %}_{{ product.id }}"><i class="fas fa-shopping-cart"></i> <span>Add to Cart</span></button>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="no-products">
+                        <i class="fas fa-search"></i>
+                        <h3>No products found</h3>
+                        <p>Try adjusting your search or filter criteria</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="newsletter-section">
+    <div class="container">
+        <div class="newsletter-banner">
+            <div class="newsletter-particles">
+                <span class="particle p1"></span>
+                <span class="particle p2"></span>
+                <span class="particle p3"></span>
+                <span class="particle p4"></span>
+                <span class="particle p5"></span>
+            </div>
+            <div class="newsletter-content fade-in-section">
+                <h2 class="newsletter-heading">Join The Inner Circle</h2>
+                <p class="newsletter-subtitle">Sign up to receive early access to new launches, exclusive offers and beauty tips.</p>
+                <form class="newsletter-form" id="newsletterForm">
+                    {% csrf_token %}
+                    <div class="newsletter-input-group">
+                        <i class="fas fa-envelope newsletter-icon"></i>
+                        <input type="email" name="email" placeholder="Enter your email address" required class="newsletter-input">
+                        <button type="submit" class="newsletter-btn">Register</button>
+                    </div>
+                    <div class="newsletter-message" id="newsletterMessage"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.filter-dropdown-btn').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            var parent = this.closest('.filter-dropdown');
+            parent.classList.toggle('open');
+        });
+    });
+    document.addEventListener('click', function() {
+        document.querySelectorAll('.filter-dropdown.open').forEach(function(d) {
+            d.classList.remove('open');
+        });
+    });
+    document.querySelectorAll('.filter-dropdown-menu').forEach(function(m) {
+        m.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+    });
+
+    const newsletterForm = document.getElementById('newsletterForm');
+    const newsletterMsg = document.getElementById('newsletterMessage');
+    if (newsletterForm) {
+        newsletterForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = this.querySelector('input[name="email"]').value;
+            newsletterMsg.textContent = 'Subscribing...';
+            newsletterMsg.className = 'newsletter-message';
+            fetch('{% url "shop:newsletter_subscribe" %}', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+                body: JSON.stringify({ email: email }),
+            })
+            .then(r => r.json())
+            .then(d => {
+                newsletterMsg.textContent = d.message;
+                newsletterMsg.className = 'newsletter-message ' + (d.success ? 'success' : 'error');
+                if (d.success) newsletterForm.querySelector('input[name="email"]').value = '';
+            })
+            .catch(() => {
+                newsletterMsg.textContent = 'Something went wrong. Try again.';
+                newsletterMsg.className = 'newsletter-message error';
+            });
+        });
+    }
+});
+</script>
+{% endblock %}

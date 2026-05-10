@@ -1,0 +1,147 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+
+{% block title %}About Us - Glowify{% endblock %}
+
+{% block content %}
+
+<section class="luxury-hero">
+    {% if hero and hero.background_image %}
+    <div class="hero-bg-image" style="background-image: url('{{ hero.background_image.url }}');"></div>
+    {% endif %}
+    <div class="hero-bg-glow"></div>
+
+    <div class="hero-cosmetic blush-powder">
+        <div class="blush-circle"></div>
+        <div class="blush-particles">
+            <span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+    </div>
+
+    <div class="hero-cosmetic makeup-brush">
+        <div class="brush-handle"></div>
+        <div class="brush-bristles"></div>
+    </div>
+
+    <div class="hero-cosmetic foundation">
+        <div class="foundation-jar"></div>
+        <div class="foundation-cream"></div>
+    </div>
+
+    <div class="hero-cosmetic lipstick-smear">
+        <div class="smear-1"></div>
+        <div class="smear-2"></div>
+        <div class="smear-3"></div>
+    </div>
+
+    <div class="powder-particles">
+        <span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span>
+    </div>
+
+    <div class="hero-glass-card" data-aos="fade-up" data-aos-duration="1200">
+        <div class="glass-card-inner">
+            <h1>The Art of Radiant Skin</h1>
+            <p>The legacy of timeless beauty and scientific precision, crafted for the modern connoisseur</p>
+        </div>
+    </div>
+</section>
+
+<section class="our-story-section">
+    <div class="container">
+        <div class="story-grid">
+            <div class="story-content" data-aos="fade-right" data-aos-duration="1000">
+                <h2 class="story-heading">Our Story</h2>
+                <p class="story-text">At Glowify, beauty is more than makeup — it's confidence, self-expression, and self-love. We create high-quality, skin-friendly cosmetics designed to enhance your natural glow. Every product is crafted with care, combining modern beauty trends with premium ingredients to deliver long-lasting results.</p>
+                <h2 class="story-heading">Our Mission</h2>
+                <p class="story-text">To make beauty accessible, empowering, and effortless for everyone. From bold lip shades to everyday essentials, our collections are designed to suit every skin tone and style. We believe that beauty should feel comfortable, look stunning, and inspire confidence.</p>
+            </div>
+            <div class="story-image-wrapper" data-aos="fade-left" data-aos-duration="1000" data-aos-delay="200">
+                <div class="story-image-inner">
+                    {% with first_img=about_images.first %}
+                    {% if first_img %}
+                    <img src="{{ first_img.image.url }}" alt="{{ first_img.caption|default:'Three smiling women holding skincare products' }}" class="story-image">
+                    {% else %}
+                    <img src="https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=600&q=80" alt="Three smiling women holding skincare products" class="story-image">
+                    {% endif %}
+                    {% endwith %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="core-values-section">
+    <div class="container">
+        <div class="values-header" data-aos="fade-up" data-aos-duration="800">
+            <h2>Our Core Values</h2>
+        </div>
+        <div class="values-grid">
+            <div class="value-card" data-aos="fade-up" data-aos-duration="900" data-aos-delay="100">
+                <div class="value-icon-wrap">
+                    <div class="value-icon crown-icon">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                </div>
+                <h3>Premium Quality</h3>
+                <p>We create high-performance beauty products with carefully selected, skin-loving ingredients.</p>
+            </div>
+            <div class="value-card" data-aos="fade-up" data-aos-duration="900" data-aos-delay="250">
+                <div class="value-icon-wrap">
+                    <div class="value-icon heart-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                </div>
+                <h3>Empowered Confidence</h3>
+                <p>Our mission is to inspire confidence and celebrate individuality through every shade.</p>
+            </div>
+            <div class="value-card" data-aos="fade-up" data-aos-duration="900" data-aos-delay="400">
+                <div class="value-icon-wrap">
+                    <div class="value-icon leaf-icon">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                </div>
+                <h3>Ethical Beauty</h3>
+                <p>Cruelty-free, responsible, and committed to sustainable practices.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="founder-section">
+    <div class="container">
+        <div class="founder-grid">
+            <div class="founder-image-wrapper" data-aos="fade-right" data-aos-duration="1000">
+                <div class="founder-image-inner">
+                    {% if founder and founder.image %}
+                    <img src="{{ founder.image.url }}" alt="{{ founder.name }} - Founder" class="founder-image">
+                    {% else %}
+                    <img src="https://images.unsplash.com/photo-1580618672591-eb180b1a973f?w=500&q=80" alt="Founder portrait" class="founder-image">
+                    {% endif %}
+                </div>
+            </div>
+            <div class="founder-content" data-aos="fade-left" data-aos-duration="1000" data-aos-delay="200">
+                <h2 class="founder-heading">Meet the Founder</h2>
+                <p class="founder-subheading">Behind every shade, there is a story.</p>
+                <div class="founder-divider"></div>
+                <p class="founder-text">Elena started this brand with a simple vision — to create beauty products that combine luxury, performance, and confidence. With a passion for skincare and makeup innovation, she believed that every woman deserves products that enhance natural beauty without compromise.</p>
+                <p class="founder-text">What began as a dream soon became a mission: To design high-quality, cruelty-free cosmetics that empower individuals to express themselves fearlessly.</p>
+                <p class="founder-text">Her dedication to excellence, detail, and modern beauty trends continues to shape every product we create.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="commitment-section">
+    <div class="container">
+        <div class="commitment-card" data-aos="fade-up" data-aos-duration="1000">
+            <h2 class="commitment-heading">Our Unwavering Commitment</h2>
+            <div class="commitment-divider"></div>
+            <p class="commitment-text">At our core, we are dedicated to delivering beauty without compromise.</p>
+            <p class="commitment-text">We are committed to creating high-quality, skin-friendly products that combine innovation, safety, and performance.</p>
+            <p class="commitment-text">Every formula is thoughtfully developed to ensure comfort, long-lasting wear, and visible results.</p>
+            <a href="#" class="commitment-btn">View Sustainability Report</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

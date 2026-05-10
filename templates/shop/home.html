@@ -1,0 +1,521 @@
+{% extends 'shop/base.html' %}
+
+{% block content %}
+<section class="hero-section">
+    <div class="swiper hero-swiper">
+        <div class="swiper-wrapper">
+            {% for banner in banners %}
+            <div class="swiper-slide hero-slide">
+                <div class="hero-bg" style="background-image: url('{{ banner.image.url }}');"></div>
+                <div class="hero-overlay"></div>
+                <div class="sparkle-effect"></div>
+                <div class="sparkle-effect sparkle-2"></div>
+                <div class="sparkle-effect sparkle-3"></div>
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-lg-6">
+                            <div class="hero-content">
+                                
+                                <a href="{{ banner.button_url }}" class="btn-shop-now">{{ banner.button_text }}</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="swiper-slide hero-slide default-slide">
+                <div class="sparkle-effect"></div>
+                <div class="sparkle-effect sparkle-2"></div>
+                <div class="sparkle-effect sparkle-3"></div>
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-lg-6">
+                            <div class="hero-content">
+                                <span class="hero-subtitle">LIMITED TIME OFFER</span>
+                                <h1 class="hero-title">Beauty Sale</h1>
+                                <span class="hero-offer">UP TO 50% OFF</span>
+                                <a href="{% url 'shop:shop' %}" class="btn-shop-now">Shop Now</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="swiper-button-prev hero-prev"></div>
+        <div class="swiper-button-next hero-next"></div>
+        <div class="swiper-pagination hero-pagination"></div>
+    </div>
+    
+    <div class="flash-sale-badge">
+        <div class="badge-tag">
+            <span class="tag-line">Flash Sale</span>
+            <span class="tag-offer">50% Off</span>
+        </div>
+        <div class="badge-string"></div>
+    </div>
+</section>
+{% if about_section %}
+<section class="luxury-about-section" id="luxuryAbout">
+    <div class="container">
+        <div class="about-luxury-grid">
+            <div class="about-luxury-images {% if about_section.animation_enabled %}animate-fade-in{% endif %}">
+                <div class="luxury-image-wrapper main-image-wrapper">
+                    {% if about_section.main_image %}
+                    <img src="{{ about_section.main_image.url }}" alt="Skincare Model" class="luxury-main-img">
+                    {% else %}
+                    <div class="luxury-placeholder">
+                        <i class="fas fa-spa"></i>
+                        <span>Main Image</span>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="luxury-image-wrapper overlap-image-wrapper {% if about_section.animation_enabled %}animate-float{% endif %}">
+                    {% if about_section.overlap_image %}
+                    <img src="{{ about_section.overlap_image.url }}" alt="Beauty Products" class="luxury-overlap-img">
+                    {% else %}
+                    <div class="luxury-placeholder overlap-placeholder">
+                        <i class="fas fa-pump-soap"></i>
+                        <span>Overlap Image</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="about-luxury-content {% if about_section.animation_enabled %}animate-fade-in-delayed{% endif %}">
+                <span class="luxury-label">ABOUT GLOWIFY</span>
+                <h2 class="luxury-heading">{{ about_section.heading }}</h2>
+                <div class="luxury-divider"></div>
+                <p class="luxury-description">{{ about_section.description }}</p>
+                <div class="luxury-features">
+                    <div class="luxury-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Premium Ingredients</span>
+                    </div>
+                    <div class="luxury-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Dermatologist Tested</span>
+                    </div>
+                    <div class="luxury-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Cruelty Free</span>
+                    </div>
+                </div>
+                <a href="{% url 'shop:shop' %}" class="btn-luxury-shop">
+                    <span>Explore Collection</span>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+{% if ingredients %}
+<section class="ingredients-section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Powered by Performance Ingredients</h2>
+        </div>
+        <div class="swiper ingredients-swiper">
+            <div class="swiper-wrapper">
+                {% for ingredient in ingredients %}
+                <div class="swiper-slide">
+                    <div class="ingredient-card">
+                        <img src="{{ ingredient.image.url }}" alt="{{ ingredient.title }}" loading="lazy">
+                        <div class="ingredient-overlay">
+                            <div class="glassmorphism-content">
+                                <h3>{{ ingredient.title }}</h3>
+                                <p>{{ ingredient.description }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+{% if featured_products %}
+<section class="featured-products-section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Featured Products</h2>
+            <p class="section-subtitle">Handpicked beauty essentials just for you</p>
+        </div>
+        <div class="featured-products-grid">
+            {% for product in featured_products %}
+            <div class="product-card">
+                {% if product.category_tag %}
+                <span class="product-badge {{ product.category_tag|slugify }}">{{ product.category_tag }}</span>
+                {% endif %}
+                <div class="product-image-wrapper">
+                    <a href="{% url 'shop:product_detail' product.slug %}">
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy">
+                    </a>
+                </div>
+                <div class="product-card-content">
+                    <h3 class="product-card-title">{{ product.title }}</h3>
+                    <p class="product-card-desc">{{ product.short_description }}</p>
+                    <div class="product-rating">
+                        <div class="stars">
+                            {% with rating=product.rating|default:0 %}
+                            <i class="fas fa-star {% if rating < 1 %}empty{% endif %}"></i>
+                            <i class="fas fa-star {% if rating < 2 %}empty{% endif %}"></i>
+                            <i class="fas fa-star {% if rating < 3 %}empty{% endif %}"></i>
+                            <i class="fas fa-star {% if rating < 4 %}empty{% endif %}"></i>
+                            <i class="fas fa-star {% if rating < 5 %}empty{% endif %}"></i>
+                            {% endwith %}
+                        </div>
+                        <span>({{ product.reviews }})</span>
+                    </div>
+                    <div class="product-card-footer">
+                        <span class="product-price">₹{{ product.price }}</span>
+                        <div class="product-actions">
+                            <button class="add-to-cart-btn" data-key="product_{{ product.id }}">
+                                <i class="fas fa-shopping-cart"></i>
+                                <span>Add to Cart</span>
+                            </button>
+                            <button class="wishlist-btn">
+                                <i class="far fa-heart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+{% if categories %}
+<section class="top-categories-section" id="topCategories">
+    <div class="container">
+        <div class="section-header fade-in-section">
+          
+            <h2 class="section-title">Top Categories</h2>
+            
+        </div>
+        <div class="categories-grid">
+            {% for category in categories %}
+            <div class="category-card fade-in-section">
+                <div class="category-card-image">
+                    {% if category.image %}
+                    <img
+                        src="{{ category.image.url }}"
+                        alt="{{ category.category_name }}"
+                        loading="lazy"
+                    >
+                    {% else %}
+                    <div class="category-icon-fallback">
+                        <i class="fas fa-spa"></i>
+                    </div>
+                    {% endif %}
+                    <div class="category-image-overlay"></div>
+                </div>
+                <div class="category-card-body">
+                    <h3>{{ category.category_name }}</h3>
+                    {% if category.subtitle %}
+                    <p class="category-subtitle">{{ category.subtitle }}</p>
+                    {% endif %}
+                    <a href="{% url 'shop:shop' %}?category={{ category.slug }}" class="btn-category-shop">
+                        <span>{{ category.button_text }}</span>
+                        <i class="fas fa-arrow-right btn-arrow"></i>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+{% if why_glowify %}
+<section class="why-glowify-section" id="whyGlowify">
+    <div class="container">
+        <div class="why-glowify-grid">
+            <div class="why-glowify-left fade-in-section">
+                <div class="model-image-wrapper">
+                    <div class="floral-bg"></div>
+                    <div class="model-image-container">
+                        {% if why_glowify.model_image %}
+                        <img src="{{ why_glowify.model_image.url }}" alt="Beauty Model" class="model-image" loading="lazy">
+                        {% else %}
+                        <div class="model-placeholder">
+                            <i class="fas fa-spa"></i>
+                            <span>Model Image</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="glow-sparkle sparkle-1"><i class="fas fa-star"></i></div>
+                    <div class="glow-sparkle sparkle-2"><i class="fas fa-star"></i></div>
+                    <div class="glow-sparkle sparkle-3"><i class="fas fa-star"></i></div>
+                </div>
+            </div>
+            <div class="why-glowify-right">
+                <div class="why-heading-wrapper fade-in-section">
+                    <h2 class="why-heading">{{ why_glowify.heading }}</h2>
+                    <div class="why-underline"></div>
+                    <p class="why-subheading">{{ why_glowify.subheading }}</p>
+                </div>
+                <div class="why-features-stack">
+                    {% for feature in why_features %}
+                    <div class="why-feature-card fade-in-section" style="--card-index: {{ forloop.counter0 }}">
+                        <div class="feature-number">{{ feature.number }}</div>
+                        <div class="feature-content">
+                            <h4 class="feature-title">{{ feature.title }}</h4>
+                            {% if feature.description %}
+                            <p class="feature-desc">{{ feature.description }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+{% if testimonials %}
+<section class="testimonials-section">
+    <div class="container">
+        <div class="section-header fade-in-section">
+            
+            <h2 class="section-title">Happy Customers</h2>
+    
+        </div>
+        <div class="testimonial-carousel-wrapper">
+            <div class="swiper testimonial-swiper">
+                <div class="swiper-wrapper">
+                    {% for t in testimonials %}
+                    <div class="swiper-slide">
+                        <div class="testimonial-card">
+                            <div class="testimonial-top">
+                                <div class="testimonial-profile">
+                                    {% if t.image %}
+                                    <img src="{{ t.image.url }}" alt="{{ t.name }}" class="testimonial-img" loading="lazy">
+                                    {% else %}
+                                    <div class="testimonial-img-placeholder">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="testimonial-stars">
+                                    {% for i in "12345"|make_list %}
+                                    <i class="fas fa-star {% if forloop.counter > t.rating %}empty{% endif %}"></i>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="testimonial-body">
+                                <p class="testimonial-text">"{{ t.review_text }}"</p>
+                            </div>
+                            <div class="testimonial-footer">
+                                <span class="testimonial-author">{{ t.name }}</span>
+                                <span class="testimonial-city">{{ t.city }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="swiper-button-prev testimonial-prev"><i class="fas fa-chevron-left"></i></div>
+                <div class="swiper-button-next testimonial-next"><i class="fas fa-chevron-right"></i></div>
+                <div class="swiper-pagination testimonial-pagination"></div>
+            </div>
+            </div>
+    </div>
+</section>
+{% endif %}
+<section class="newsletter-section">
+    <div class="container">
+        <div class="newsletter-banner">
+            <div class="newsletter-particles">
+                <span class="particle p1"></span>
+                <span class="particle p2"></span>
+                <span class="particle p3"></span>
+                <span class="particle p4"></span>
+                <span class="particle p5"></span>
+            </div>
+            {% if newsletter_img %}
+            <div class="newsletter-image-wrap">
+                <img src="{{ newsletter_img.image.url }}" alt="Newsletter" class="newsletter-image">
+            </div>
+            {% endif %}
+            <div class="newsletter-content-wrap">
+                <div class="newsletter-content fade-in-section">
+                    <h2 class="newsletter-heading">Join The Inner Circle</h2>
+                    <p class="newsletter-subtitle">Sign up to receive early access to new launches, exclusive offers and skincare tips.</p>
+                    <form class="newsletter-form" id="newsletterForm">
+                        {% csrf_token %}
+                        <div class="newsletter-input-group">
+                            <i class="fas fa-envelope newsletter-icon"></i>
+                            <input type="email" name="email" placeholder="Enter your email address" required class="newsletter-input">
+                            <button type="submit" class="newsletter-btn">Register</button>
+                        </div>
+                        <div class="newsletter-message" id="newsletterMessage"></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% if flash_sale %}
+<section class="flash-sale-section">
+    <div class="container">
+        <div class="semi-circle-bg" style="--semi-start: {{ flash_sale.semi_circle_color_start }}; --semi-end: {{ flash_sale.semi_circle_color_end }};">
+            <div class="semi-inner-glow"></div>
+            <div class="semi-sparkle ss-1"><i class="fas fa-star"></i></div>
+            <div class="semi-sparkle ss-2"><i class="fas fa-star"></i></div>
+            <div class="semi-sparkle ss-3"><i class="fas fa-star"></i></div>
+            <div class="semi-sparkle ss-4"><i class="fas fa-star"></i></div>
+
+            <div class="flash-sale-grid">
+                <div class="flash-left" data-aos="fade-right" data-aos-duration="1000">
+                    <div class="model-wrapper">
+                        <div class="model-inner">
+                            {% if flash_sale.model_image %}
+                            <img src="{{ flash_sale.model_image.url }}" alt="Beauty Girl" class="anime-model">
+                            {% else %}
+                            <div class="model-placeholder-icon">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            {% endif %}
+                            <div class="cream-jar-glow"></div>
+                        </div>
+                        <div class="model-shadow"></div>
+                        {% if flash_sale.enable_sparkles %}
+                        <div class="sparkle-particle sp-1"><i class="fas fa-star"></i></div>
+                        <div class="sparkle-particle sp-2"><i class="fas fa-star"></i></div>
+                        <div class="sparkle-particle sp-3"><i class="fas fa-star"></i></div>
+                        <div class="sparkle-particle sp-4"><i class="fas fa-sparkles"></i></div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="flash-center" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200">
+                    <div class="sale-tag">
+                        <div class="tag-string"></div>
+                        <div class="tag-body">
+                            <span class="tag-label">Flash Sale</span>
+                            <span class="tag-offer">{{ flash_sale.sale_percentage }} Off</span>
+                        </div>
+                    </div>
+                    <h1 class="flash-heading">{{ flash_sale.heading }}</h1>
+                    <div class="heading-underline"></div>
+                    <a href="{{ flash_sale.button_url }}" class="flash-btn">{{ flash_sale.button_text }}</a>
+                </div>
+
+                <div class="flash-right" data-aos="fade-left" data-aos-duration="1000" data-aos-delay="400">
+                    <div class="product-single-wrapper">
+                        {% if flash_sale.product_image %}
+                        <div class="product-item">
+                            <img src="{{ flash_sale.product_image.url }}" alt="Product">
+                        </div>
+                        {% endif %}
+                        <div class="pearl p1"></div>
+                        <div class="pearl p2"></div>
+                        <div class="pearl p3"></div>
+                        <div class="sparkle-dot sd-1"></div>
+                        <div class="sparkle-dot sd-2"></div>
+                        <div class="sparkle-dot sd-3"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if flash_sale.enable_particles %}
+        <div class="float-particles">
+            <span class="fp f1"></span>
+            <span class="fp f2"></span>
+            <span class="fp f3"></span>
+            <span class="fp f4"></span>
+            <span class="fp f5"></span>
+            <span class="fp f6"></span>
+            <span class="fp f7"></span>
+            <span class="fp f8"></span>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endif %}
+{% endblock %}
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    AOS.init({
+        once: true,
+        offset: 100,
+    });
+    const ingredientSwiper = document.querySelector('.ingredients-swiper');
+    if (ingredientSwiper) {
+        new Swiper(ingredientSwiper, {
+            slidesPerView: 1,
+            spaceBetween: 25,
+            loop: true,
+            speed: 800,
+            autoplay: {
+                delay: 3500,
+                disableOnInteraction: false,
+                pauseOnMouseEnter: true,
+            },
+            breakpoints: {
+                768: {
+                    slidesPerView: 2,
+                },
+                1200: {
+                    slidesPerView: 3,
+                }
+            }
+        });
+    }
+
+    const testimonialSwiperEl = document.querySelector('.testimonial-swiper');
+    if (testimonialSwiperEl) {
+        new Swiper(testimonialSwiperEl, {
+            slidesPerView: 1,
+            spaceBetween: 30,
+            loop: true,
+            speed: 700,
+            effect: 'fade',
+            fadeEffect: { crossFade: true },
+            autoplay: {
+                delay: 4000,
+                disableOnInteraction: false,
+                pauseOnMouseEnter: true,
+            },
+            navigation: {
+                nextEl: '.testimonial-next',
+                prevEl: '.testimonial-prev',
+            },
+            pagination: {
+                el: '.testimonial-pagination',
+                clickable: true,
+            },
+        });
+    }
+
+    const newsletterForm = document.getElementById('newsletterForm');
+    const newsletterMsg = document.getElementById('newsletterMessage');
+    if (newsletterForm) {
+        newsletterForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = this.querySelector('input[name="email"]').value;
+            newsletterMsg.textContent = 'Subscribing...';
+            newsletterMsg.className = 'newsletter-message';
+            fetch('{% url "shop:newsletter_subscribe" %}', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+                body: JSON.stringify({ email: email }),
+            })
+            .then(r => r.json())
+            .then(d => {
+                newsletterMsg.textContent = d.message;
+                newsletterMsg.className = 'newsletter-message ' + (d.success ? 'success' : 'error');
+                if (d.success) newsletterForm.querySelector('input[name="email"]').value = '';
+            })
+            .catch(() => {
+                newsletterMsg.textContent = 'Something went wrong. Try again.';
+                newsletterMsg.className = 'newsletter-message error';
+            });
+        });
+    }
+});
+</script>
+{% endblock %}

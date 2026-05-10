@@ -1,0 +1,100 @@
+{% extends 'shop/base.html' %}
+
+{% block content %}
+<section class="product-detail-section">
+    <div class="container">
+        <div class="product-detail-grid">
+            <div class="product-gallery">
+                <div class="main-image">
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                    {% if product.on_sale %}
+                    <span class="sale-badge">-{{ product.discount_percentage }}%</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="product-details">
+                <span class="product-category">{% if is_eye_makeup %}{{ product.brand.name|default:'Eye Makeup' }}{% elif is_fragrance %}{{ product.brand.name|default:'Fragrance' }}{% elif is_hair_care %}{{ product.brand.name|default:'Hair Care' }}{% elif is_lipstick %}{{ product.brand.name|default:'Lipsticks' }}{% elif is_nail %}{{ product.brand.name|default:'Nails' }}{% else %}{{ product.category.category_name }}{% endif %}</span>
+                <h1>{{ product.name }}</h1>
+                <div class="product-rating">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star-half-alt"></i>
+                    <span>(4.5) 128 reviews</span>
+                </div>
+                <div class="product-price">
+                    {% if product.on_sale %}
+                    <span class="current-price">${{ product.discount_price }}</span>
+                    <span class="original-price">${{ product.price }}</span>
+                    <span class="save-badge">Save {{ product.discount_percentage }}%</span>
+                    {% else %}
+                    <span class="current-price">${{ product.price }}</span>
+                    {% endif %}
+                </div>
+                <p class="product-description">{{ product.description }}</p>
+                <div class="product-meta">
+                    <span class="stock-status {% if product.stock > 0 %}in-stock{% else %}out-of-stock{% endif %}">
+                        {% if product.stock > 0 %}
+                        <i class="fas fa-check-circle"></i> In Stock ({{ product.stock }} available)
+                        {% else %}
+                        <i class="fas fa-times-circle"></i> Out of Stock
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="product-actions-detail">
+                    <button class="add-to-cart-btn" data-key="{% if is_eye_makeup %}eye{% elif is_fragrance %}fragrance{% elif is_hair_care %}hair{% elif is_lipstick %}lipstick{% elif is_nail %}nail{% else %}product{% endif %}_{{ product.id }}" {% if product.stock == 0 %}disabled{% endif %}>
+                        <i class="fas fa-shopping-cart"></i> <span>Add to Cart</span>
+                    </button>
+                    <button class="btn-wishlist">
+                        <i class="far fa-heart"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% if related_products %}
+<section class="related-section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Related Products</h2>
+        </div>
+        <div class="products-grid">
+            {% for related in related_products %}
+            <div class="product-card">
+                {% if related.on_sale %}
+                <span class="sale-badge">-{{ related.discount_percentage }}%</span>
+                {% endif %}
+                <div class="product-image">
+                    <a href="{% if is_eye_makeup %}{% url 'shop:eye_makeup_detail' related.slug %}{% elif is_fragrance %}{% url 'shop:fragrance_detail' related.slug %}{% elif is_hair_care %}{% url 'shop:hair_care_detail' related.slug %}{% elif is_lipstick %}{% url 'shop:lipstick_detail' related.slug %}{% elif is_nail %}{% url 'shop:nail_detail' related.slug %}{% else %}{% url 'shop:product_detail' related.slug %}{% endif %}">
+                        <img src="{{ related.image.url }}" alt="{{ related.name }}">
+                    </a>
+                    <div class="product-actions">
+                        <button class="action-btn wishlist-btn"><i class="far fa-heart"></i></button>
+                        <button class="action-btn cart-btn"><i class="fas fa-shopping-cart"></i></button>
+                        <button class="action-btn quick-view-btn"><i class="fas fa-eye"></i></button>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <span class="product-category">{% if is_eye_makeup %}{{ related.brand.name|default:'Eye Makeup' }}{% elif is_fragrance %}{{ related.brand.name|default:'Fragrance' }}{% elif is_hair_care %}{{ related.brand.name|default:'Hair Care' }}{% elif is_lipstick %}{{ related.brand.name|default:'Lipsticks' }}{% elif is_nail %}{{ related.brand.name|default:'Nails' }}{% else %}{{ related.category.category_name }}{% endif %}</span>
+                    <h3 class="product-name">
+                        <a href="{% if is_eye_makeup %}{% url 'shop:eye_makeup_detail' related.slug %}{% elif is_fragrance %}{% url 'shop:fragrance_detail' related.slug %}{% elif is_hair_care %}{% url 'shop:hair_care_detail' related.slug %}{% elif is_lipstick %}{% url 'shop:lipstick_detail' related.slug %}{% elif is_nail %}{% url 'shop:nail_detail' related.slug %}{% else %}{% url 'shop:product_detail' related.slug %}{% endif %}">{{ related.name }}</a>
+                    </h3>
+                    <div class="product-price">
+                        {% if related.on_sale %}
+                        <span class="current-price">${{ related.discount_price }}</span>
+                        <span class="original-price">${{ related.price }}</span>
+                        {% else %}
+                        <span class="current-price">${{ related.price }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+{% endblock %}
